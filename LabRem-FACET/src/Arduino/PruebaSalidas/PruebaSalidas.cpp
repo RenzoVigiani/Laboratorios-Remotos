@@ -5,6 +5,14 @@
 //EthernetServer server(22);
 EthernetServer server = EthernetServer(22);
 // VAriables de json
+int num_Lab=0;
+
+bool subLab=true;
+bool subLab=true;
+
+
+
+
 int L1=0;
 int L2=0;
 int L3=1;
@@ -32,8 +40,8 @@ void pasoBack(int);
 #define IN2  4
 #define IN3  5
 #define IN4  6
-    //secuencia de vueltas
-  int paso [8][4] =
+//secuencia de vueltas
+/*  int paso [8][4] =
   {
   {1, 0, 0, 0},
   {1, 1, 0, 0},
@@ -44,8 +52,10 @@ void pasoBack(int);
   {0, 0, 0, 1},
   {1, 0, 0, 1}
   };
-  int vueltas=100;
+  int vueltas=100;*/
+
 //  int dir=0;
+
 /////////////////////////////////////
 void setup() {
   uint8_t mac[6] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
@@ -101,10 +111,12 @@ void loop() {
     Serial.println(instrucciones);   
     
     if (strstr(status, "GET / HTTP/1.1") != NULL) {
-        // Allocate a temporary JsonDocument
-        // Use arduinojson.org/v6/assistant to compute the capacity.
-            StaticJsonDocument<500> doc;     
-        // Create the "analog" array
+// Allocate a temporary JsonDocument
+// Use arduinojson.org/v6/assistant to compute the capacity.
+      StaticJsonDocument<500> doc;     
+// Create the "analog" array
+      JsonArray Estado = doc["Estado"];
+
           JsonArray digitalValues = doc.createNestedArray("Leds");
           value = L1;
           digitalValues.add(value);
@@ -146,8 +158,8 @@ void loop() {
         
         StaticJsonDocument<96> doc;
 
-       // Serial.println("ENTRO EN UN POST");
-       // Deserializo
+        // Serial.println("ENTRO EN UN POST");
+        // Deserializo
         DeserializationError error = deserializeJson(doc, instrucciones);
         
         if (error) {
@@ -167,52 +179,44 @@ void loop() {
         JsonArray Position = doc["Position"];
         M1 = Position[0]; // 180
         M2 = Position[1]; // 90
-//        M3 = Position[2]; // 0
+  //        M3 = Position[2]; // 0
     }
 
-        while(M2>=0)
-        {
-          Serial.println(M2);
-          if(M1==0)
+  while(M2>=0)
+  {
+    Serial.println(M2);
+    if(M1==0)
+    {
+      if(M2>0){
+        Serial.println("paso: ");  
+          for(int i=0;i<8;i++)
           {
-           if(M2>0){
-              Serial.println("paso: ");  
-               for(int i=0;i<8;i++)
-               {
-                Serial.print(i);
-                valorSalidas(i);
-                delay(10);
-               }            
-          }else if(M2<=0)
-            {  
-             // digitalWrite(led5,LOW);
-             // delay(10);
-              stopMotor();
-            }
-          //pasoFoward(M2);
-          }
-          else if(M1==1) 
+          Serial.print(i);
+          valorSalidas(i);
+          delay(10);
+          }            
+    }else if(M2<=0)
+      {  
+        stopMotor();
+      }
+    }
+    else if(M1==1) 
+    {
+      if(M2>0){
+        Serial.println("paso: ");  
+          for(int i=7;i>=0;i--)
           {
-            if(M2>0){
-              Serial.println("paso: ");  
-               for(int i=7;i>=0;i--)
-               {
-                Serial.print(i);
-                valorSalidas(i);
-                delay(10);
-               }            
-            }else if(M2<=0)
-            {  
-             // digitalWrite(led5,LOW);
-             // delay(10);
-              stopMotor();
-            }
-          }
-          M2--;
-        }
-    
-// Disconnect
-// client.stop();
+          Serial.print(i);
+          valorSalidas(i);
+          delay(10);
+          }            
+      }else if(M2<=0)
+      {  
+        stopMotor();
+      }
+    }
+    M2--;
+  }
 }
 
 void valorSalidas(int i)
@@ -289,30 +293,6 @@ void enciendoled(void){
     digitalWrite(led7,LOW);
 }
 
-void pasoFoward(int M2){
-  if(M2>0){  
-//       if(i<8)
-//       {
-//        Serial.println(i);   
-//
-//        digitalWrite(IN1, paso[i][0]);
-//        digitalWrite(IN2, paso[i][1]);
-//        digitalWrite(IN3, paso[i][2]);
-//        digitalWrite(IN4, paso[i][3]);
-////        delay(10);
-//        i++;
-//       }            
-//        else if(i>=8)i=0;
-  }else if(M2<=0)
-    {  
-     // digitalWrite(led5,LOW);
-     // delay(10);
-      stopMotor();
-    }
-}
-void pasoBack(int M2){
-    digitalWrite(led6,HIGH);
-}
 void stopMotor()
 {
  digitalWrite(IN1, 0);
