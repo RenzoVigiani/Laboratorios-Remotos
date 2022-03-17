@@ -23,29 +23,26 @@ int variable_0=0;
 int variable_1=0;
 int variable_2=0;
 int variable_3=0;
-
 ////////////////////
-int value=0;
-byte dato=0x00;
 
 //////////// Strings de comunicación /////////////
-char status[100] = {0};
-char instrucciones[100] = {0};
-char operacion[100] = {0};
-char valores_recibidos[100] = {0};
+char status[170] = {0};
+char instrucciones[150] = {0};
+char operacion[20] = {0};
+
 
 ////////////// Funciones  ////////////////////
-void ControlPost();
-void valorSalidas(int i);
-void enciendoled();
-void prueva_lab();
-void stopMotor();
+void ControlPost(void);
+void valorSalidas(int);
+void enciendoled(bool p0,bool p1,bool p2,bool p3);
+void prueva_lab(int vueltas, bool Sentido);
+void stopMotor(void);
 
 //////////// declaración de salidas ///////////////////
 const int Led_0=7;
 const int Led_1=8;
 const int Led_2=9;
-const int Led_3=9;
+const int Led_3=10;
 
 /////////// salidas para el motor ////////////
 #define IN1  3
@@ -54,7 +51,8 @@ const int Led_3=9;
 #define IN4  6
 
 //secuencia de vueltas
-/*  int paso [8][4] =
+/*  
+int paso [8][4] =
   {
   {1, 0, 0, 0},
   {1, 1, 0, 0},
@@ -65,7 +63,8 @@ const int Led_3=9;
   {0, 0, 0, 1},
   {1, 0, 0, 1}
   };
-  int vueltas=100;*/
+  int vueltas=100;
+  */
 
 //  int dir=0;
 /////////////////////////////////////
@@ -73,7 +72,7 @@ void setup() {
   uint8_t mac[6] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
   IPAddress myIP(172,20,5,140);
   // Initialize serial port
-  Serial.begin(115200);
+  Serial.begin(9600);
   while (!Serial) continue;
   // Initialize Ethernet libary
   Ethernet.begin(mac,myIP);  
@@ -121,7 +120,7 @@ void loop() {
     Serial.println("instrucciones:");
     Serial.println(instrucciones);   
     if (strstr(status, "GET / HTTP/1.1") != NULL) {
-      StaticJsonDocument<300> doc;     
+      StaticJsonDocument<256> doc;     
 
       JsonArray Estado = doc.createNestedArray("Estado");
       Estado.add(num_Lab);
@@ -158,13 +157,16 @@ void loop() {
       client.println(); 
 // Write JSON document
       serializeJsonPretty(doc, client);
+// Disconnect
+ client.stop();
+
       }
 ///////////////////////////// POST ///////////////////////////////////
     if (strstr(status, "POST / HTTP/1.1") !=NULL) {
         Serial.println("Solicitud de escritura recibida");
         client.println(F("HTTP/1.1 200 OK"));
         client.println();
-        StaticJsonDocument<300> doc;
+        StaticJsonDocument<256> doc;
         // Deserializo
         DeserializationError error = deserializeJson(doc, instrucciones);
         
@@ -196,9 +198,11 @@ void loop() {
         variable_1 = Analogico[1]; // 
         variable_2 = Analogico[2]; // 
         variable_3 = Analogico[3]; // 
+      ControlPost();
     }
-    ControlPost();
-}
+
+    
+  }
 
 }
 
@@ -206,10 +210,13 @@ void ControlPost(){
   switch (num_Lab) {
     case 0:
       Serial.println("Laboratorio: Sistemas Digitales");
-      prueva_lab();
+      int vueltas = variable_0 * 512;
+      prueva_lab(vueltas, SW_0);
       break;
     case 1:
       Serial.println("Laboratorio: Sistemas de Control");
+      vueltas = variable_0 * 512;
+      prueva_lab(vueltas, SW_0);
       break;
     case 2:
       Serial.println("Laboratorio: Telecomunicaciones");
@@ -223,45 +230,43 @@ void ControlPost(){
   }
 }
 
-void prueva_lab(){
-  while(variable_0>=0)
+void prueva_lab(int vueltas, bool Sentido){ // Función de prueba para los lab
+  while((vueltas)>=0)
   {
-    Serial.println(variable_0);
-    if(SW_0==0)
+    Serial.println(vueltas);
+    if(Sentido==true)
     {
-      if(variable_0>0){
-        Serial.println("paso: ");  
+      if(vueltas>0){        
           for(int i=0;i<8;i++)
           {
-          Serial.print(i);
           valorSalidas(i);
-          delay(10);
+          delay(5);
           }            
-    }else if(variable_0<=0)
+    }else if(vueltas<=0)
       {  
         stopMotor();
+        enciendoled(pulsador_0,pulsador_1,pulsador_2,pulsador_3);
       }
     }
-    else if(SW_0==1) 
+    else if(Sentido==false) 
     {
-      if(variable_0>0){
-        Serial.println("paso: ");  
+      if(vueltas>0){
           for(int i=7;i>=0;i--)
           {
-          Serial.print(i);
           valorSalidas(i);
-          delay(10);
+          delay(5);
           }            
-      }else if(variable_0<=0)
+      }else if(vueltas<=0)
       {  
         stopMotor();
+        enciendoled(pulsador_0,pulsador_1,pulsador_2,pulsador_3);
       }
     }
-    variable_0--;
+    vueltas--;    
   }
 }
 
-void valorSalidas(int i){
+void valorSalidas(int i){ // Salidas Motor
   switch (i) {
   case 0:
     digitalWrite(IN1,1);
@@ -319,27 +324,26 @@ void valorSalidas(int i){
   }
 }
 
-void enciendoled(){
-  if(pulsador_0)
+void enciendoled(bool p0,bool p1,bool p2,bool p3){
+  if(p0)
     digitalWrite(Led_0,HIGH);
   else
     digitalWrite(Led_0,LOW);
-   if(pulsador_1)
+   if(p1)
     digitalWrite(Led_1,HIGH);
    else
     digitalWrite(Led_1,LOW);
-   if(pulsador_2)
+   if(p2)
     digitalWrite(Led_2,HIGH);
    else
     digitalWrite(Led_2,LOW);
-   if(pulsador_3)
+   if(p3)
     digitalWrite(Led_3,HIGH);
    else
     digitalWrite(Led_3,LOW);
 }
 
-void stopMotor()
-{
+void stopMotor(){
  digitalWrite(IN1, 0);
  digitalWrite(IN2, 0);
  digitalWrite(IN3, 0);
