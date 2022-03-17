@@ -2,6 +2,7 @@
 En este repositorio se realizarán los cambios a tener en cuenta para el avance de los lab remotos.
 
 ####Json a enviar (Indented style)
+	
 	{
 	"Estado": [ 0, true, false],
 	"Pulsadores": [ false,	false,	false,	false	],
