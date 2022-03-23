@@ -2,6 +2,7 @@
 
 En este repositorio se realizarán los cambios a tener en cuenta para el avance de los lab remotos.
 
+<<<<<<< HEAD
 #### Json a enviar (Indented style)
 
 {
@@ -10,6 +11,16 @@ En este repositorio se realizarán los cambios a tener en cuenta para el avance 
  "Llaves": [ false, false, false, false ],
  "Analogico": [ 1, 0, 125, 542 ]
 }
+=======
+####Json a enviar (Indented style)
+	
+	{
+	"Estado": [ 0, true, false],
+	"Pulsadores": [ false,	false,	false,	false	],
+	"Llaves": [	false,	false,	false,	false	],
+	"Analogico": [	1,	0,	125,	542	]
+	}
+>>>>>>> 70c3bffdd1733a09b303717cace37fad0af32af9
 
 **Sintaxis**
 #### Estado: [Laboratorio, SubLab, Inicio del experimento]
