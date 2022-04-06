@@ -120,8 +120,8 @@ void loop() {
     Serial.println("instrucciones:");
     Serial.println(instrucciones);   
     if (strstr(status, "GET / HTTP/1.1") != NULL) {
+      
       StaticJsonDocument<256> doc;     
-
       JsonArray Estado = doc.createNestedArray("Estado");
       Estado.add(num_Lab);
       Estado.add(subLab);

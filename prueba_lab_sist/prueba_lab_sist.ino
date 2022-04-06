@@ -1,51 +1,41 @@
 #include <ArduinoJson.h>
 #include <UIPEthernet.h>
+#include <SoftwareSerial.h>
 
-EthernetServer server = EthernetServer(22);
+//////////// declaración de salidas ///////////////////
+#define rxPin 3
+#define txPin 4
+//#define Pul_0  3
+//#define Pul_1  4
+#define Pul_2  5
+#define Pul_3  6
+#define Switch_0  7
+#define Switch_1  8
+#define Switch_2  9
+//#define Switch_3  10
+///////////////////////////////////////////////////
+
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
 
-//////// VAriables de json //////////////
-// Estado
-int num_Lab=0;
-bool subLab=true;
-bool iniLab=true;
-// Pulsadores
-bool pulsador_0=false;
-bool pulsador_1=false;
-bool pulsador_2=false;
-bool pulsador_3=false;
-// Llaves
-bool SW_0=false;
-bool SW_1=false;
-bool SW_2=false;
-bool SW_3=false;
+// Set up a new SoftwareSerial object
+SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin);
 
-//////////// Strings de comunicación /////////////
-char status[170] = {0};
-char instrucciones[150] = {0};
-char operacion[20] = {0};
+EthernetServer server = EthernetServer(22);
 
-////////////// Funciones  ////////////////////
-void ControlPost(void);
-void ControlSalidas(bool p0,bool p1,bool p2,bool p3, bool sw0,bool sw1,bool sw2,bool sw3);
-void ControlUART();
-//////////// declaración de salidas ///////////////////
-//const int Pul_0=3;
-//const int Pul_1=4;
-const int Pul_2=5;
-const int Pul_3=6;
-const int Switch_0=7;
-const int Switch_1=8;
-const int Switch_2=9;
-//const int Switch_3=10;
 void setup() {
+///////////////////////////////////////////////////
+// Initialize serial port
+  Serial.begin(9600);
+  while (!Serial) continue;
+// Initialize SoftwareSerial port
+  mySerial.begin(9600);
+  pinMode(rxPin, INPUT);
+  pinMode(txPin, OUTPUT);
+///////////////////////////////////////////////////
+// INICIALIZO MAC E IP
   uint8_t mac[6] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
   IPAddress myIP(172,20,5,140);
-  // Initialize serial port
-  Serial.begin(115200);
-  inputString.reserve(200);
-  while (!Serial) continue;
   // Initialize Ethernet libary
   Ethernet.begin(mac,myIP);  
   // Start to listen
@@ -53,7 +43,7 @@ void setup() {
   Serial.println(F("Server is ready."));
   Serial.print(F("Please connect to http://"));
   Serial.println(Ethernet.localIP());
-  
+///////////////////////////////////////////////////
 // declaro tipo salidas  
 //  pinMode(Pul_0, OUTPUT);
 //  pinMode(Pul_1, OUTPUT);
@@ -71,9 +61,29 @@ void setup() {
   digitalWrite(Switch_1,LOW);
   digitalWrite(Switch_2,LOW);
 //  digitalWrite(Switch_3,LOW);
-  }
+}
 
-void loop() {
+void loop(){  
+//////////// Strings de comunicación /////////////
+char status[170] = {0};
+char instrucciones[150] = {0};
+char operacion[20] = {0};
+
+//////// VAriables de json //////////////
+// Estado
+  int num_Lab=0;
+  bool subLab=true;
+  bool iniLab=false;
+// Pulsadores
+  bool pulsador_0=false;
+  bool pulsador_1=false;
+  bool pulsador_2=false;
+  bool pulsador_3=false;
+// Llaves
+  bool SW_0=false;
+  bool SW_1=false;
+  bool SW_2=false;
+  bool SW_3=false;
 
   // Wait for an incomming connection
   EthernetClient client = server.available(); 
@@ -83,12 +93,6 @@ void loop() {
   Serial.println(F("New client"));
   // Read the request (we ignore the content in this example)
   while (client.available()) {
-    if (stringComplete) {
-      Serial.println(F("Recibido por uart: "));
-      Serial.println(inputString);
-      inputString = "";
-      stringComplete = false;
-    }
     client.readBytesUntil('\r', status, sizeof(status));
     Serial.println("status:");
     Serial.println(status);
@@ -96,10 +100,11 @@ void loop() {
     strncpy(operacion,status,15);
     Serial.println("operacion: ");
     Serial.println(operacion);
-  //obtengo las instrucciones del formato json
+//obtengo las instrucciones del formato json
     strncpy(instrucciones,&status[15],(sizeof(status)-15));
     Serial.println("instrucciones:");
-    Serial.println(instrucciones);   
+    Serial.println(instrucciones);
+    
     if (strstr(status, "GET / HTTP/1.1") != NULL) {
       
       StaticJsonDocument<256> doc;     
@@ -137,7 +142,7 @@ void loop() {
       }
 ///////////////////////////// POST ///////////////////////////////////
     if (strstr(status, "POST / HTTP/1.1") !=NULL) {
-        Serial.println("Solicitud de escritura recibida");
+        Serial.println("Solicitud de escritura recibida");        
         client.println(F("HTTP/1.1 200 OK"));
         client.println();
         StaticJsonDocument<256> doc;
@@ -166,40 +171,48 @@ void loop() {
         SW_1 = Llaves[1]; // 
         SW_2 = Llaves[2]; // 
         SW_3 = Llaves[3]; //  
-
-        ControlPost();
-        Serial.println("Salidas asignadas");
-
+        
+        if(num_Lab==0){
+          ControlPost(pulsador_0,pulsador_1,pulsador_2,pulsador_3,SW_0,SW_1,SW_2,SW_3);
+          Serial.println("Salidas asignadas");  
+        }else{
+          Serial.println("Laboratorio incorrecto");    
+        }
     }
-
   }
 }
 
-void ControlPost(){
-  if(num_Lab==0){
-    Serial.println("");
-    Serial.println("Laboratorio: Sistemas Digitales");
-    ControlSalidas(pulsador_0,pulsador_1,pulsador_2,pulsador_3,SW_0,SW_1,SW_2,SW_3);
-  } 
+void ControlPost(bool pulsador_0,bool pulsador_1,bool pulsador_2,bool pulsador_3,bool SW_0,bool SW_1,bool SW_2,bool SW_3){
+  Serial.println("Laboratorio: Sistemas Digitales");
+  if(mySerial.available()){
+    mySerialFunction();
+  }
+  ControlPulsadores(pulsador_0,pulsador_1,pulsador_2,pulsador_3);
+  Serial.println("Escribo Pulsadores");
+  ControlLlaves(SW_0,SW_1,SW_2,SW_3);
+  Serial.println("Escribo Llaves");
+}
+void mySerialFunction() {
+  EthernetClient client = server.available(); 
+  mySerial.write("Enviar");
+  Serial.println("Datos recibidos");
+  if(client.available()){
+    client.println(mySerial.read());
+    client.println();
+  }
+  Serial.write(mySerial.read());
 }
 
-void ControlSalidas(bool p0,bool p1,bool p2,bool p3,bool sw0,bool sw1,bool sw2,bool sw3){
-// Asignamos las salidas.
-//  digitalWrite(Pul_0,p0);
-//  digitalWrite(Pul_1,p1);
+void ControlPulsadores(bool p0,bool p1,bool p2,bool p3){
+  //digitalWrite(Pul_0,p0);
+  //digitalWrite(Pul_1,p1);
   digitalWrite(Pul_2,p2);
   digitalWrite(Pul_3,p3);
+}
+
+void ControlLlaves(bool sw0,bool sw1,bool sw2,bool sw3){
   digitalWrite(Switch_0,sw0);
   digitalWrite(Switch_1,sw1);
   digitalWrite(Switch_2,sw2);
-//  digitalWrite(Pul_3,p3);
-}
-void serialEvent() {
-  while (Serial.available()) {
-    char inChar = (char)Serial.read();
-    inputString += inChar;
-    if (inChar == '_') {
-      stringComplete = true;
-    }
-  }
+  //  digitalWrite(Pul_3,p3);
 }
