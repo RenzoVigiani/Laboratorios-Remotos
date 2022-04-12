@@ -17,6 +17,12 @@
 
 String inputString = "";         // a String to hold incoming data
 bool stringComplete = false;  // whether the string is complete
+// funciones
+void ControlLlaves(bool sw0,bool sw1,bool sw2,bool sw3);
+void ControlPost(bool pulsador_0,bool pulsador_1,bool pulsador_2,bool pulsador_3,bool SW_0,bool SW_1,bool SW_2,bool SW_3);
+void ControlPulsadores(bool p0,bool p1,bool p2,bool p3);
+void mySerialFunction();
+
 
 // Set up a new SoftwareSerial object
 SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin);
@@ -65,11 +71,11 @@ void setup() {
 
 void loop(){  
 //////////// Strings de comunicación /////////////
-char status[170] = {0};
-char instrucciones[150] = {0};
+char status[190] = {0};
+char instrucciones[170] = {0};
 char operacion[20] = {0};
 
-//////// VAriables de json //////////////
+//////// VAriables Locales de json //////////////
 // Estado
   int num_Lab=0;
   bool subLab=true;

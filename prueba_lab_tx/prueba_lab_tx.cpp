@@ -20,6 +20,8 @@ String recibido="";
 String enviado="";
 SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin);
 
+void mySerialFunction();
+
 void setup() {
 // declaro tipo salidas  
 /*  pinMode(Pul_0, INPUT);
