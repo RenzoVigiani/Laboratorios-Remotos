@@ -191,22 +191,17 @@ char operacion[20] = {0};
 void ControlPost(bool pulsador_0,bool pulsador_1,bool pulsador_2,bool pulsador_3,bool SW_0,bool SW_1,bool SW_2,bool SW_3){
   Serial.println("Laboratorio: Sistemas Digitales");
   if(mySerial.available()){
-    mySerialFunction();
+  Serial.println("Datos recibidos");
+  Serial.write(mySerial.read());
   }
   ControlPulsadores(pulsador_0,pulsador_1,pulsador_2,pulsador_3);
   Serial.println("Escribo Pulsadores");
   ControlLlaves(SW_0,SW_1,SW_2,SW_3);
   Serial.println("Escribo Llaves");
 }
+
 void mySerialFunction() {
-  EthernetClient client = server.available(); 
-  mySerial.write("Enviar");
-  Serial.println("Datos recibidos");
-  if(client.available()){
-    client.println(mySerial.read());
-    client.println();
-  }
-  Serial.write(mySerial.read());
+  //
 }
 
 void ControlPulsadores(bool p0,bool p1,bool p2,bool p3){
