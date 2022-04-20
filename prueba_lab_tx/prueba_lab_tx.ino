@@ -23,7 +23,16 @@ SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin);
 //void mySerialFunction();
 
 void setup() {
+///////////////////////////////////////////////////
+// Initialize serial port
+  Serial.begin(9600);
+  while (!Serial) continue;
+  // Initialize SoftwareSerial port
+  mySerial.begin(9600);
+  pinMode(rxPin, INPUT);
+  pinMode(txPin, OUTPUT);
 // declaro tipo salidas  
+
 /*  pinMode(Pul_0, INPUT);
   pinMode(Pul_1, INPUT);
 */
@@ -33,30 +42,25 @@ void setup() {
   pinMode(Switch_1, INPUT);
   pinMode(Switch_2, INPUT);
 //  pinMode(Switch_3, INPUT);
-  Serial.begin(9600);
-//  inputString.reserve(100);
-  while (!Serial) continue;
-  mySerial.begin(9600);
-  pinMode(rxPin, INPUT);
-  pinMode(txPin, OUTPUT);
-  digitalWrite(txPin, LOW);
 }
  
 void loop() { 
-  mySerial.println("Pulsadores: ");
+  
+//  mySerial.write("Pulsadores: \n");
+  
   /*    if(digitalRead(Pul_0)) mySerial.println("0: ON");
   else mySerial.println("0: OFF");
   if(digitalRead(Pul_1)) mySerial.println("1: ON");
   else mymySerial.println("1: OFF");
-  */
+*/
   if(digitalRead(Pul_2)) mySerial.println("2: ON");
   else mySerial.println("2: OFF");
-  if(digitalRead(Pul_3)) mySerial.println("3: ON");
+/*  if(digitalRead(Pul_3)) mySerial.println("3: ON");
   else mySerial.println("3: OFF");
 
-  mySerial.println("Llaves: ");
+  mySerial.write("Llaves: \n");
   if(digitalRead(Switch_0)) mySerial.println("0: ON");
-  else mySerial.println(" Llave 0: OFF");
+  else mySerial.println("0: OFF");
   if(digitalRead(Switch_1)) mySerial.println("1: ON");
   else mySerial.println("1: OFF");
   if(digitalRead(Switch_2)) mySerial.println("2: ON");
@@ -64,7 +68,5 @@ void loop() {
   /*    if(digitalRead(Switch_3)) mySerial.println("3: ON");
   else mySerial.println("3: OFF");
   */     
-
+delay(1000);
 }
-
-

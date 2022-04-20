@@ -1,6 +1,5 @@
 #include <ArduinoJson.h>
 #include <UIPEthernet.h>
-#include <SoftwareSerial.h>
 
 //////////// declaración de salidas ///////////////////
 #define rxPin 3
@@ -15,17 +14,10 @@
 //#define Switch_3  10
 ///////////////////////////////////////////////////
 
-String inputString = "";         // a String to hold incoming data
-bool stringComplete = false;  // whether the string is complete
 // funciones
 void ControlLlaves(bool sw0,bool sw1,bool sw2,bool sw3);
 void ControlPost(bool pulsador_0,bool pulsador_1,bool pulsador_2,bool pulsador_3,bool SW_0,bool SW_1,bool SW_2,bool SW_3);
 void ControlPulsadores(bool p0,bool p1,bool p2,bool p3);
-void mySerialFunction();
-
-
-// Set up a new SoftwareSerial object
-SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin);
 
 EthernetServer server = EthernetServer(22);
 
@@ -34,38 +26,34 @@ void setup() {
 // Initialize serial port
   Serial.begin(9600);
   while (!Serial) continue;
-// Initialize SoftwareSerial port
-  mySerial.begin(9600);
-  pinMode(rxPin, INPUT);
-  pinMode(txPin, OUTPUT);
 ///////////////////////////////////////////////////
 // INICIALIZO MAC E IP
   uint8_t mac[6] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
   IPAddress myIP(172,20,5,140);
-  // Initialize Ethernet libary
+// Initialize Ethernet libary
   Ethernet.begin(mac,myIP);  
-  // Start to listen
+// Start to listen
   server.begin();
   Serial.println(F("Server is ready."));
   Serial.print(F("Please connect to http://"));
   Serial.println(Ethernet.localIP());
 ///////////////////////////////////////////////////
-// declaro tipo salidas  
+// Declaro tipo  y estado de las salidas  
 //  pinMode(Pul_0, OUTPUT);
-//  pinMode(Pul_1, OUTPUT);
-  pinMode(Pul_2, OUTPUT);
-  pinMode(Pul_3, OUTPUT);
-  pinMode(Switch_0, OUTPUT);
-  pinMode(Switch_1, OUTPUT);
-  pinMode(Switch_2, OUTPUT);
-//  pinMode(Switch_3, OUTPUT);
 //  digitalWrite(Pul_0,LOW);
+//  pinMode(Pul_1, OUTPUT);
 //  digitalWrite(Pul_1,LOW);
+  pinMode(Pul_2, OUTPUT);
   digitalWrite(Pul_2,LOW);
+  pinMode(Pul_3, OUTPUT);
   digitalWrite(Pul_3,LOW);
+  pinMode(Switch_0, OUTPUT);
   digitalWrite(Switch_0,LOW);
+  pinMode(Switch_1, OUTPUT);
   digitalWrite(Switch_1,LOW);
+  pinMode(Switch_2, OUTPUT);
   digitalWrite(Switch_2,LOW);
+//  pinMode(Switch_3, OUTPUT);
 //  digitalWrite(Switch_3,LOW);
 }
 
@@ -110,7 +98,7 @@ char operacion[20] = {0};
     strncpy(instrucciones,&status[15],(sizeof(status)-15));
     Serial.println("instrucciones:");
     Serial.println(instrucciones);
-    
+/////////////////////////////  GET  ///////////////////////////////////    
     if (strstr(status, "GET / HTTP/1.1") != NULL) {
       
       StaticJsonDocument<256> doc;     
@@ -190,24 +178,10 @@ char operacion[20] = {0};
 
 void ControlPost(bool pulsador_0,bool pulsador_1,bool pulsador_2,bool pulsador_3,bool SW_0,bool SW_1,bool SW_2,bool SW_3){
   Serial.println("Laboratorio: Sistemas Digitales");
-  if(mySerial.available()){
-    mySerialFunction();
-  }
+  Serial.println("Escribo Pulsadores...");
   ControlPulsadores(pulsador_0,pulsador_1,pulsador_2,pulsador_3);
-  Serial.println("Escribo Pulsadores");
+  Serial.println("Escribo Llaves...");
   ControlLlaves(SW_0,SW_1,SW_2,SW_3);
-  Serial.println("Escribo Llaves");
-}
-void mySerialFunction() {
-  EthernetClient client = server.available(); 
-  Serial.println("Datos recibidos");
-/*  if(client.available()){
-    client.println(mySerial.read());
-    client.println();
-  }
-  */
-  Serial.write(mySerial.read());
-  
 }
 
 void ControlPulsadores(bool p0,bool p1,bool p2,bool p3){
