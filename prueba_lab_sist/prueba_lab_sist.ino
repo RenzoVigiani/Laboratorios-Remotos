@@ -1,6 +1,5 @@
 #include <ArduinoJson.h>
 #include <UIPEthernet.h>
-
 //////////// declaración de salidas ///////////////////
 #define rxPin 3
 #define txPin 4
@@ -125,7 +124,7 @@ char instrucciones[170] = {0};
 
       Serial.readBytesUntil('\n', UART, sizeof(UART));     
       doc["UART"][0] = UART;
-
+      
       Serial.print(F("Sending: "));
       serializeJson(doc, Serial);
       Serial.println();
@@ -139,7 +138,7 @@ char instrucciones[170] = {0};
 // Write JSON document
       serializeJsonPretty(doc, client);
 // Disconnect
-      client.stop();
+//      client.stop();
       }
 ///////////////////////////// POST ///////////////////////////////////
     if (strstr(status, "POST / HTTP/1.1") !=NULL) {
