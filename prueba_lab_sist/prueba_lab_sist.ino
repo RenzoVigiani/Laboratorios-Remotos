@@ -1,5 +1,6 @@
 #include <ArduinoJson.h>
 #include <UIPEthernet.h>
+#include <SoftwareSerial.h>
 //////////// declaración de salidas ///////////////////
 #define rxPin 3
 #define txPin 4
@@ -11,6 +12,7 @@
 #define Switch_1  8
 #define Switch_2  9
 //#define Switch_3  10
+SoftwareSerial mySerial =  SoftwareSerial(rxPin, txPin);
 ///////////////////////////////////////////////////
 
 // funciones
@@ -25,6 +27,7 @@ void setup() {
 // Initialize serial port
   Serial.begin(9600);
   while (!Serial) continue;
+  mySerial.begin(9600);
 ///////////////////////////////////////////////////
 // INICIALIZO MAC E IP
   uint8_t mac[6] = {0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED};
@@ -122,7 +125,7 @@ char instrucciones[170] = {0};
       Llaves.add(SW_2);
       Llaves.add(SW_3);
 
-      Serial.readBytesUntil('\n', UART, sizeof(UART));     
+      mySerial.readBytesUntil('\n', UART, sizeof(UART));     
       doc["UART"][0] = UART;
       
       Serial.print(F("Sending: "));

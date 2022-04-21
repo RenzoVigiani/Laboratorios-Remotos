@@ -36,7 +36,7 @@ void setup() {
 void loop() { 
   char mensaje[20]={0};
   char recibe[20]={0};
-
+  
   if(Serial.available()){
     while(Serial.available()){
     char c=Serial.read();
