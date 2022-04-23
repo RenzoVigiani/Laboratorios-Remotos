@@ -51,6 +51,6 @@ Es un string con un tamaño maximo de 100 caracteres.
 
 Nombre: Altera_FPGA_Board_EP2C8Q208C8 Cyclone II
 
-![alt text](https://kr.element14.com/productimages/standard/en_GB/1560812-40.jpg)
 
+![Optional Text](https://raw.githubusercontent.com/RenzoVigiani/Laboratorios-Remotos/SistemasDigitales/Imagenes/cyclone-ii.png)
 
