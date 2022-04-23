@@ -8,7 +8,7 @@ En este repositorio se realizarán los cambios a tener en cuenta para el avance 
 	"Estado": [ 0, true, false],
 	"Pulsadores": [ false,	false,	false,	false	],
 	"Llaves": [	false,	false,	false,	false	],
-	"Analogico": [	1,	0,	125,	542	]
+	"Serial": 
 	}
 
 **Sintaxis**
@@ -37,31 +37,20 @@ En este repositorio se realizarán los cambios a tener en cuenta para el avance 
   - Pulsadores: [Pulsador1, Pulsador2,Pulsador3,Pulsador4 ]
   - Llaves:  [Llave1, Llave2, Llave3, Llave4]
 
-**Sistemas de control**
-
-- Aliassing
-  - Llaves:  [Llave1, Llave2]
-  - Analogico: [Analogico1,Analogico2]
-- Control automatico de posición
-  - Analogico: [Analogico1,Analogico2,Analogico3,Analogico4]
-
-**Telecomunicaciones**
-
-- WIFI 2.4
-  - Analogico: [Analogico1,Analogico2]
-- Enlace de Radio por soft
-  - Analogico: [Analogico1,Analogico2,Analogico3,Analogico4] // Revisar
-**Fisica Basica**
-- Convergente
-  - Pulsadores:[Pulsador1]
-  - Llaves:[Llave1]
-  - Analogico:[Analogico1,Analogico2]
-- Divergente
-  - Pulsadores:[Pulsador1]
-  - Llaves:[Llave1]
-  - Analogico:[Analogico1,Analogico2,Analogico3]
-**
 Pulsadores: [Pulsador1, Pulsador2,Pulsador3,Pulsador4 ]
 Llaves:  [Llave1, Llave2, Llave3, Llave4]
 Analogico: [Analogico1,Analogico2,Analogico3,Analogico4]
 **
+
+**Arduino Mega**
+
+***PIN OUT***
+
+ ![alt text](https://diyi0t.com/wp-content/uploads/2019/08/Arduino-Mega-Pinout.png) 
+
+
+**FPGA Cyclone II**
+
+Nombre: Altera_FPGA_Board_EP2C8Q208C8 Cyclone II
+
+![alt text](https://kr.element14.com/productimages/large/en_GB/1560812-40.jpg)
