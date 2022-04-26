@@ -3,36 +3,10 @@
 
 EthernetServer server = EthernetServer(22);
 
-//////// VAriables de json //////////////
-// Estado
-int num_Lab=0;
-bool subLab=true;
-bool iniLab=true;
-// Pulsadores
-bool pulsador_0=false;
-bool pulsador_1=false;
-bool pulsador_2=false;
-bool pulsador_3=false;
-// Llaves
-bool SW_0=false;
-bool SW_1=false;
-bool SW_2=false;
-bool SW_3=false;
-// Analogico
-int variable_0=0;
-int variable_1=0;
-int variable_2=0;
-int variable_3=0;
-////////////////////
-
-//////////// Strings de comunicación /////////////
-char status[170] = {0};
-char instrucciones[150] = {0};
-char operacion[20] = {0};
-
-
 ////////////// Funciones  ////////////////////
-void ControlPost(void);
+void ControlPost(int num_Lab, bool subLab, bool iniLab, int variable_0, int variable_1, int variable_2, int variable_3);
+void wifi_24_ghz(bool iniLab, int azimut, int elevacion);
+void sdr(bool iniLab, int intensidad_max, int intensidad_min, int modulacion, int codificacion);
 void valorSalidas(int);
 void enciendoled(bool p0,bool p1,bool p2,bool p3);
 void prueva_lab(int vueltas, bool Sentido);
@@ -100,6 +74,23 @@ void setup() {
   }
 
 void loop() {
+//////// VAriables de json //////////////
+// Estado
+int num_Lab=0;
+bool subLab=true;
+bool iniLab=true;
+// Analogico
+int variable_0=0;
+int variable_1=0;
+int variable_2=0;
+int variable_3=0;
+////////////////////
+
+//////////// Strings de comunicación /////////////
+char status[150] = {0};
+char instrucciones[130] = {0};
+char operacion[20] = {0};
+
   // Wait for an incomming connection
   EthernetClient client = server.available(); 
   // Do we have a client?
@@ -121,23 +112,11 @@ void loop() {
     Serial.println(instrucciones);   
     if (strstr(status, "GET / HTTP/1.1") != NULL) {
       
-      StaticJsonDocument<256> doc;     
+      StaticJsonDocument<128> doc;     
       JsonArray Estado = doc.createNestedArray("Estado");
       Estado.add(num_Lab);
       Estado.add(subLab);
       Estado.add(iniLab);
-
-      JsonArray Pulsadores = doc.createNestedArray("Pulsadores");
-      Pulsadores.add(pulsador_0);
-      Pulsadores.add(pulsador_1);
-      Pulsadores.add(pulsador_2);
-      Pulsadores.add(pulsador_3);
-
-      JsonArray Llaves = doc.createNestedArray("Llaves");
-      Llaves.add(SW_0);
-      Llaves.add(SW_1);
-      Llaves.add(SW_2);
-      Llaves.add(SW_3);
 
       JsonArray Analogico = doc.createNestedArray("Analogico");
       Analogico.add(variable_0);
@@ -166,7 +145,7 @@ void loop() {
         Serial.println("Solicitud de escritura recibida");
         client.println(F("HTTP/1.1 200 OK"));
         client.println();
-        StaticJsonDocument<256> doc;
+        StaticJsonDocument<128> doc;
         // Deserializo
         DeserializationError error = deserializeJson(doc, instrucciones);
         
@@ -181,171 +160,78 @@ void loop() {
         subLab = Estado[1]; // true[SubLab 1], false [SubLab 2]
         iniLab = Estado[2]; // true[Inicia Experimento], false[Finaliza Experimento]
 
-        JsonArray Pulsadores = doc["Pulsadores"];
-        pulsador_0 = Pulsadores[0]; // false
-        pulsador_1 = Pulsadores[1]; // false
-        pulsador_2 = Pulsadores[2]; // false
-        pulsador_3 = Pulsadores[3]; // false
-
-        JsonArray Llaves = doc["Llaves"];
-        SW_0 = Llaves[0]; // 
-        SW_1 = Llaves[1]; // 
-        SW_2 = Llaves[2]; // 
-        SW_3 = Llaves[3]; //  
-
         JsonArray Analogico = doc["Analogico"];
         variable_0 = Analogico[0]; // 
         variable_1 = Analogico[1]; // 
         variable_2 = Analogico[2]; // 
         variable_3 = Analogico[3]; // 
-      ControlPost();
+
+        ControlPost(num_Lab ,subLab, iniLab, variable_0, variable_1,variable_2,variable_3);
     }
-
-    
   }
-
 }
 
-void ControlPost(){
-  switch (num_Lab) {
-    case 0:
-      Serial.println("Laboratorio: Sistemas Digitales");
-      int vueltas = variable_0 * 512;
-      prueva_lab(vueltas, SW_0);
-      break;
+void ControlPost(int num_Lab, bool subLab, bool iniLab, int variable_0, int variable_1, int variable_2, int variable_3){
+  if(num_Lab== 2){
+    Serial.println("Laboratorio: Telecomunicaciones");
+    if(subLab){
+      Serial.println("Sub - Laboratorio: Enlace Wifi 2.4GHz");
+      wifi_24_ghz(iniLab, variable_0,variable_1);
+    }
+    else{
+      Serial.println("Sub - Laboratorio: Enlace Radio definido por Software");
+      sdr(iniLab, variable_0,variable_1,variable_2,variable_3);
+    }
+  }
+  else{
+      Serial.println("Error: Laboratorio Incorrecto");
+  }
+}
+
+void wifi_24_ghz(bool iniLab, int azimut, int elevacion){
+  if(iniLab){
+    if (0 <= azimut <= 180) {
+      digitalWrite(Led_0,true);
+      Serial.println(azimut);
+    }
+    if (0 <= elevacion <= 90) {
+      digitalWrite(Led_1,true);
+      Serial.println(elevacion);
+    }
+  }
+  else{
+    Serial.println("Esperando para iniciar el Laboratorio...");
+  }
+}
+
+void sdr(bool iniLab, int intensidad_max, int intensidad_min, int modulacion, int codificacion){
+  if(iniLab){
+    switch (modulacion)
+    {
     case 1:
-      Serial.println("Laboratorio: Sistemas de Control");
-      vueltas = variable_0 * 512;
-      prueva_lab(vueltas, SW_0);
+      Serial.println("Modulación: 4-QAM");
       break;
     case 2:
-      Serial.println("Laboratorio: Telecomunicaciones");
+      Serial.println("Modulación: 8-QAM");
       break;
     case 3:
-      Serial.println("Laboratorio: Fisica Basica");
+      Serial.println("Modulación: 16-QAM");
       break;
+    case 4:
+      Serial.println("Modulación: PSK");
+      break;
+    case 5:
+      Serial.println("Modulación: FSK");
+      break;
+    case 6:
+      Serial.println("Modulación: QPSK");
+      break;          
     default:
-      Serial.println("Laboratorio: Default");
+      Serial.println("Modulación: PSK");
       break;
-  }
-}
-
-void prueva_lab(int vueltas, bool Sentido){ // Función de prueba para los lab
-  while((vueltas)>=0)
-  {
-    Serial.println(vueltas);
-    if(Sentido==true)
-    {
-      if(vueltas>0){        
-          for(int i=0;i<8;i++)
-          {
-          valorSalidas(i);
-          delay(5);
-          }            
-    }else if(vueltas<=0)
-      {  
-        stopMotor();
-        enciendoled(pulsador_0,pulsador_1,pulsador_2,pulsador_3);
-      }
     }
-    else if(Sentido==false) 
-    {
-      if(vueltas>0){
-          for(int i=7;i>=0;i--)
-          {
-          valorSalidas(i);
-          delay(5);
-          }            
-      }else if(vueltas<=0)
-      {  
-        stopMotor();
-        enciendoled(pulsador_0,pulsador_1,pulsador_2,pulsador_3);
-      }
-    }
-    vueltas--;    
   }
-}
-
-void valorSalidas(int i){ // Salidas Motor
-  switch (i) {
-  case 0:
-    digitalWrite(IN1,1);
-    digitalWrite(IN2,0);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,0);
-    break;
-  case 1:
-    digitalWrite(IN1,1);
-    digitalWrite(IN2,1);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,0);
-    break;
-  case 2:
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,1);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,0);
-    break;
-  case 3:
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,1);
-    digitalWrite(IN3,1);
-    digitalWrite(IN4,0);
-    break;
-  case 4:
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,0);
-    digitalWrite(IN3,1);
-    digitalWrite(IN4,0);
-    break;
-  case 5:
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,0);
-    digitalWrite(IN3,1);
-    digitalWrite(IN4,1);
-    break;
-  case 6:
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,0);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,1);
-    break;
-  case 7:
-    digitalWrite(IN1,1);
-    digitalWrite(IN2,0);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,1);
-    break;
-  default:
-    digitalWrite(IN1,0);
-    digitalWrite(IN2,0);
-    digitalWrite(IN3,0);
-    digitalWrite(IN4,0);
+  else{
+    Serial.println("Esperando para iniciar el Laboratorio...");
   }
-}
-
-void enciendoled(bool p0,bool p1,bool p2,bool p3){
-  if(p0)
-    digitalWrite(Led_0,HIGH);
-  else
-    digitalWrite(Led_0,LOW);
-   if(p1)
-    digitalWrite(Led_1,HIGH);
-   else
-    digitalWrite(Led_1,LOW);
-   if(p2)
-    digitalWrite(Led_2,HIGH);
-   else
-    digitalWrite(Led_2,LOW);
-   if(p3)
-    digitalWrite(Led_3,HIGH);
-   else
-    digitalWrite(Led_3,LOW);
-}
-
-void stopMotor(){
- digitalWrite(IN1, 0);
- digitalWrite(IN2, 0);
- digitalWrite(IN3, 0);
- digitalWrite(IN4, 0); 
 }
