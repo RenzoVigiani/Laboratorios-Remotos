@@ -2,13 +2,11 @@
 
 En este repositorio se realizarán los cambios a tener en cuenta para el avance de los lab remotos.
 
-#### Json a enviar (Indented style)
-	
+#### Json a enviar
+
 	{
 	"Estado": [ 0, true, false],
-	"Pulsadores": [ false,	false,	false,	false	],
-	"Llaves": [	false,	false,	false,	false	],
-	"Analogico": [	1,	0,	125,	542	]
+	"Analogicos": [180, 90, 15,52] 
 	}
 
 **Sintaxis**
@@ -16,14 +14,8 @@ En este repositorio se realizarán los cambios a tener en cuenta para el avance 
 
 |Laboratorio  | Sub Laboratorio  | Estado del Experimento |
 | ------------ | ------------ | ------------ |
-| 0  | true  | Sistemas Digitales: UART  |
-| 0  | false  | Sistemas Digitales: I2C  |
-| 1  | true  |  Sistemas de control: Aliassing |
-| 1  | false  | Sistemas de control: Control automatico de posición |
 | 2  | true  |  Telecomunicaciones: Wifi 2.4G |
-| 2  | false  | Telecomunicaciones: Enlace de Radio por soft |
-| 3  | true  | Fisica Basica: Lente Convergente  |
-| 3  | false  | Fisica Basica: Lente Divergente  |
+| 2  | false  | Telecomunicaciones: Enlace de Radio por software |
 
 **Inicio del experimento:**
 
@@ -31,37 +23,39 @@ En este repositorio se realizarán los cambios a tener en cuenta para el avance 
 - false: Finaliza el experimento
 
 #### Elementos por Laboratorio
-**Sistemas digitales**
-
-- Ambos Laboratorios
-  - Pulsadores: [Pulsador1, Pulsador2,Pulsador3,Pulsador4 ]
-  - Llaves:  [Llave1, Llave2, Llave3, Llave4]
-
-**Sistemas de control**
-
-- Aliassing
-  - Llaves:  [Llave1, Llave2]
-  - Analogico: [Analogico1,Analogico2]
-- Control automatico de posición
-  - Analogico: [Analogico1,Analogico2,Analogico3,Analogico4]
-
-**Telecomunicaciones**
 
 - WIFI 2.4
-  - Analogico: [Analogico1,Analogico2]
-- Enlace de Radio por soft
-  - Analogico: [Analogico1,Analogico2,Analogico3,Analogico4] // Revisar
-**Fisica Basica**
-- Convergente
-  - Pulsadores:[Pulsador1]
-  - Llaves:[Llave1]
-  - Analogico:[Analogico1,Analogico2]
-- Divergente
-  - Pulsadores:[Pulsador1]
-  - Llaves:[Llave1]
-  - Analogico:[Analogico1,Analogico2,Analogico3]
-**
-Pulsadores: [Pulsador1, Pulsador2,Pulsador3,Pulsador4 ]
-Llaves:  [Llave1, Llave2, Llave3, Llave4]
-Analogico: [Analogico1,Analogico2,Analogico3,Analogico4]
-**
+
+Se utilizan 2 servo motores uno para cambio de angulo de azimut y otro para el angulo de elevación.
+  -  Variable a utilizar:
+      - Analogico: [azimut, elevación]
+        - Azimut: 0 - 180 [deg]
+        - Elevación: 0 - 90 [deg]
+- Enlace de Radio por software
+
+Se utiliza los parametros elegidos por el usuario en base a las siguientes tablas.
+  -  Variable a utilizar:
+      - Analogico: [Intensidad_Min, Intensidad_Max, Modulacion , Codificacion] 
+
+|Nivel de intensidad [dB] |  |
+| ------------ | ------------ |
+|Máximo        |  50 / 80 / 100 / 120|
+|Minimo        |  10 / 15 / 20 / 25|
+
+|Tipo de Modulación  |  Valor Analógico |
+| ------------ | ------------ |
+| 4-QAM| 1 |
+| 8-QAM| 2 |
+| 16-QAM| 3 |
+| PSK| 4 |
+| FSK| 5 |
+| QPSK| 6 |
+
+|Tipo de Codificación | Valor Analógico |
+| ------------ | ------------ | 
+|Codificación 1|  1 |
+|Codificación 2|  2 |
+|Codificación 3|  3 |
+
+
+  
