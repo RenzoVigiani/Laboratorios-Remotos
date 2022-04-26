@@ -57,5 +57,15 @@ Se utiliza los parametros elegidos por el usuario en base a las siguientes tabla
 |Codificación 2|  2 |
 |Codificación 3|  3 |
 
+**Enlace Wifi 2.4 GHz**
 
+Diagrama general
+
+![Enlace Wifi 2.4 GHz](https://raw.githubusercontent.com/RenzoVigiani/Laboratorios-Remotos/Telecomunicaciones/Imagenes/wifi2-4GHz.png)
   
+
+**Enlace Radio definido por Software**
+
+Diagrama general
+
+![Enlace Radio definido por Software](https://raw.githubusercontent.com/RenzoVigiani/Laboratorios-Remotos/Telecomunicaciones/Imagenes/sdr.png)
