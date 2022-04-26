@@ -36,22 +36,22 @@ Es un string con un tamaño maximo de 100 caracteres.
 
 **Esquematico general**
 ### Diagrama:
-![Cyclone II](Imagenes\Esquematico.png)
+![Esquematico general](https://raw.githubusercontent.com/RenzoVigiani/Laboratorios-Remotos/SistemasDigitales/Imagenes/Esquematico.png)
 
 **Arduino Mega**
 ### PIN OUT
 
- ![alt text](https://diyi0t.com/wp-content/uploads/2019/08/Arduino-Mega-Pinout.png) 
+ ![Arduino Mega](https://raw.githubusercontent.com/RenzoVigiani/Laboratorios-Remotos/SistemasDigitales/Imagenes/Arduino-Mega-Pinout.png) 
 
 
 **FPGA Cyclone II**
 
 Nombre: Altera_FPGA_Board_EP2C8Q208C8 Cyclone II
 
-![Cyclone II](Imagenes\cyclone-ii.png)
+![Cyclone II](https://raw.githubusercontent.com/RenzoVigiani/Laboratorios-Remotos/SistemasDigitales/Imagenes/cyclone-ii.png)
 
 **FPGA Cyclone IV**
 
-Nombre: Altera_FPGA_Board_EP4CE6E22C8
-Cyclone IV
-![Cyclone IV](Imagenes\cyclone-iv.png)
+Nombre: Altera_FPGA_Board_EP4CE6E22C8 Cyclone IV
+
+![Cyclone IV](https://raw.githubusercontent.com/RenzoVigiani/Laboratorios-Remotos/SistemasDigitales/Imagenes/cyclone-iv.png)
